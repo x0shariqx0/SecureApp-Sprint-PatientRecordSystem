@@ -9,14 +9,20 @@ patient_bp = Blueprint("patients", __name__)
 @patient_bp.route("/dashboard")
 @login_required
 def dashboard():
-    patients = Patient.all_records()
+    if session.get("role") == "doctor":
+        patients = Patient.records_for_doctor(session.get("user_id"))
+    else:
+        patients = Patient.all_records()
     return render_template("dashboard.html", patients=patients)
 
 
 @patient_bp.route("/patients")
 @login_required
 def patients():
-    records = Patient.all_records()
+    if session.get("role") == "doctor":
+        records = Patient.records_for_doctor(session.get("user_id"))
+    else:
+        records = Patient.all_records()
     return render_template("patients.html", patients=records)
 
 
