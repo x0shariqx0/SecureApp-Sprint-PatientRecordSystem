@@ -28,6 +28,13 @@ def create_app():
     def handle_csrf_error(error):
         return f"CSRF validation failed: {error.description}", 400
 
+    @app.after_request
+    def set_security_headers(response):
+        # Clickjacking protection
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Content-Security-Policy"] = "frame-ancestors 'none';"
+        return response
+
     @app.route("/")
     def index():
         if session.get("user_id"):
